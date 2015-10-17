@@ -2,7 +2,7 @@ package menu
 
 import (
 	"fmt"
-	"go-StellarWallet/publicdefine"
+	"github.com/jojopoper/go-StellarWallet/publicdefine"
 )
 
 const (

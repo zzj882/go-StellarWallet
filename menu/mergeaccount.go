@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/howeyc/gopass"
 	"github.com/jojopoper/ConsoleColor"
+	"github.com/jojopoper/go-StellarWallet/publicdefine"
 	"github.com/stellar/go-stellar-base"
 	"github.com/stellar/go-stellar-base/strkey"
-	"go-StellarWallet/publicdefine"
 	"net/url"
 	"strings"
 )

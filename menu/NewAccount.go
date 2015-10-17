@@ -3,8 +3,8 @@ package menu
 import (
 	"fmt"
 	"github.com/jojopoper/ConsoleColor"
+	"github.com/jojopoper/go-StellarWallet/publicdefine"
 	"github.com/stellar/go-stellar-base"
-	"go-StellarWallet/publicdefine"
 	"os"
 	"time"
 )

@@ -4,8 +4,8 @@ import (
 	"errors"
 	"fmt"
 	"github.com/jojopoper/ConsoleColor"
-	"go-StellarWallet/menu"
-	"go-StellarWallet/publicdefine"
+	"github.com/jojopoper/go-StellarWallet/menu"
+	"github.com/jojopoper/go-StellarWallet/publicdefine"
 	"strconv"
 )
 
