@@ -30,7 +30,11 @@ func (this *StellarAccountMerge) GetSigned(seed string) string {
 	tx.TX.Operations = append(tx.TX.Operations, opt)
 
 	tx.Mutate(build.Sequence{xdr.SequenceNumber(this.SrcInfo.NextSequence())})
-	tx.Mutate(build.DefaultNetwork)
+	if STELLAR_DEFAULT_NETWORK == STELLAR_TEST_NETWORK {
+		tx.Mutate(build.TestNetwork)
+	} else {
+		tx.Mutate(build.PublicNetwork)
+	}
 	tx.Mutate(build.SourceAccount{this.SrcInfo.ID})
 	tx.TX.Fee = BASEMENT_FEE
 	result := tx.Sign(&spriv)

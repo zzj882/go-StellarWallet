@@ -32,7 +32,11 @@ func (this *StellarPaymentInfo) GetSigned(seed string) string {
 	pb.Mutate(na)
 
 	tx.Mutate(build.Sequence{xdr.SequenceNumber(this.SrcInfo.NextSequence())})
-	tx.Mutate(build.DefaultNetwork)
+	if STELLAR_DEFAULT_NETWORK == STELLAR_TEST_NETWORK {
+		tx.Mutate(build.TestNetwork)
+	} else {
+		tx.Mutate(build.PublicNetwork)
+	}
 	tx.Mutate(pb)
 	tx.Mutate(build.SourceAccount{this.SrcInfo.ID})
 	tx.TX.Fee = BASEMENT_FEE
