@@ -5,6 +5,7 @@ const (
 	STELLAR_LIVE_NETWORK         = "https://horizon.stellar.org/"
 	STELLAR_NETWORK_ACCOUNTS     = "accounts"
 	STELLAR_NETWORK_TRANSACTIONS = "transactions"
+	STELLAR_NETWORK_OPERATIONS   = "operations"
 )
 
 var STELLAR_DEFAULT_NETWORK string = STELLAR_TEST_NETWORK
