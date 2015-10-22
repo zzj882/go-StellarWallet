@@ -3,6 +3,7 @@ package menu
 import (
 	"fmt"
 	"github.com/jojopoper/go-StellarWallet/publicdefine"
+	"golang.org/x/net/proxy"
 )
 
 type MenuSubItem struct {
@@ -33,6 +34,8 @@ type MenuSubItemInterface interface {
 	ExecFlag() int
 	PrintSubmenu()
 	GetInputMemo(langType int) string
+	httpget(geturl string) (map[string]interface{}, error)
+	httppost_form(address, data string) (map[string]interface{}, error)
 }
 
 func (this *MenuSubItem) InitMenu(key string) {
@@ -128,4 +131,36 @@ func (this *MenuSubItem) PrintSubmenu() {
 
 func (this *MenuSubItem) GetInputMemo(langType int) string {
 	return this.inputMemo[langType]
+}
+
+func (this *MenuSubItem) httpget(geturl string) (map[string]interface{}, error) {
+	if publicdefine.CurrProxyInfo == nil || publicdefine.CurrProxyInfo.Enabled == false {
+		return publicdefine.HttpGet(geturl)
+	} else if len(publicdefine.CurrProxyInfo.UserName) == 0 {
+		return publicdefine.HttpProxyGet(geturl, publicdefine.CurrProxyInfo.IP,
+			publicdefine.CurrProxyInfo.Port)
+	}
+
+	return publicdefine.HttpProxyGet(geturl, publicdefine.CurrProxyInfo.IP,
+		publicdefine.CurrProxyInfo.Port,
+		&proxy.Auth{
+			User:     publicdefine.CurrProxyInfo.UserName,
+			Password: publicdefine.CurrProxyInfo.Password,
+		})
+}
+
+func (this *MenuSubItem) httppost_form(address, data string) (map[string]interface{}, error) {
+	if publicdefine.CurrProxyInfo == nil || publicdefine.CurrProxyInfo.Enabled == false {
+		return publicdefine.HttpPost_form(address, data)
+	} else if len(publicdefine.CurrProxyInfo.UserName) == 0 {
+		return publicdefine.HttpProxyPost_form(address, data, publicdefine.CurrProxyInfo.IP,
+			publicdefine.CurrProxyInfo.Port)
+	}
+
+	return publicdefine.HttpProxyPost_form(address, data, publicdefine.CurrProxyInfo.IP,
+		publicdefine.CurrProxyInfo.Port,
+		&proxy.Auth{
+			User:     publicdefine.CurrProxyInfo.UserName,
+			Password: publicdefine.CurrProxyInfo.Password,
+		})
 }
