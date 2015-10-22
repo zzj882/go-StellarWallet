@@ -33,6 +33,10 @@ func (this *AccountInfo) InitAccInfo(parent MenuSubItemInterface, key string) {
 	payinfo.InitAccInfoPayment(this, "1")
 	this.AddSubItem(&payinfo)
 
+	operquary := AccountInfoOperationQuary{}
+	operquary.InitAccInfoOperQuary(this, "1")
+	this.AddSubItem(&operquary)
+
 	returnParent := ReturnParentMenu{}
 	returnParent.InitReturnParentMenu(this, "1")
 	this.AddSubItem(&returnParent)
