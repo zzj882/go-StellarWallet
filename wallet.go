@@ -6,15 +6,61 @@ import (
 	"github.com/jojopoper/ConsoleColor"
 	"github.com/jojopoper/go-StellarWallet/menu"
 	"github.com/jojopoper/go-StellarWallet/publicdefine"
+	"os"
 	"strconv"
+	"strings"
 )
 
 func main() {
+	// publicdefine.CurrProxyInfo = &publicdefine.UseProxyInfo{}
+	// publicdefine.CurrProxyInfo.Enabled = false
+	setCurrentArgs(os.Args)
+
 	currLanguage, errMsg := selectLanguage(3)
 	if errMsg == nil {
 		menu.MainMenuInstace.SetLanguageType(currLanguage)
+		networkTitle := []string{
+			publicdefine.L_Chinese: " 当前连接网络为 : ",
+			publicdefine.L_English: " Current connecting network is : ",
+		}
+		ConsoleColor.Println(ConsoleColor.C_YELLOW,
+			"\r\n", networkTitle[currLanguage], publicdefine.GetDefaultNWString(), "\r\n")
 		menu.MainMenuInstace.ExecuteFunc(true)
 	}
+}
+
+func setCurrentArgs(args []string) {
+	lenArgs := len(args)
+	for i := 1; i < lenArgs; i++ {
+		switch strings.ToLower(args[i]) {
+		case "--live":
+			publicdefine.STELLAR_DEFAULT_NETWORK = publicdefine.STELLAR_LIVE_NETWORK
+		case "--test":
+			publicdefine.STELLAR_DEFAULT_NETWORK = publicdefine.STELLAR_TEST_NETWORK
+		case "--proxy":
+			i += setCurrentProxy(args[i:])
+		}
+	}
+}
+
+// format is --proxy "IP;PORT;UserName;Password"
+func setCurrentProxy(args []string) int {
+	// fmt.Println(args)
+	// fmt.Println(len(args))
+	if args == nil || len(args) < 2 {
+		return 0
+	}
+	tmps := strings.Split(args[1], ";")
+	if len(tmps) != 4 {
+		return 0
+	}
+	publicdefine.CurrProxyInfo.IP = tmps[0]
+	publicdefine.CurrProxyInfo.Port = tmps[1]
+	publicdefine.CurrProxyInfo.UserName = tmps[2]
+	publicdefine.CurrProxyInfo.Password = tmps[3]
+	publicdefine.CurrProxyInfo.Enabled = true
+	// fmt.Println(*publicdefine.CurrProxyInfo)
+	return 1
 }
 
 func selectLanguage(maxRetry int) (int, error) {
