@@ -7,7 +7,6 @@ import (
 	"github.com/jojopoper/ConsoleColor"
 	"github.com/jojopoper/go-StellarWallet/publicdefine"
 	"github.com/stellar/go-stellar-base"
-	"github.com/stellar/go-stellar-base/strkey"
 	"net/url"
 	"strconv"
 	"strings"
@@ -141,7 +140,7 @@ func (this *AccountInfoPayment) input_SrcAddr() string {
 
 	_, err := fmt.Scanf("%s\n", &input)
 	if err == nil {
-		if this.verifyGAddress(input) == nil {
+		if publicdefine.VerifyGAddress(input) == nil {
 			return input
 		}
 	}
@@ -152,7 +151,7 @@ func (this *AccountInfoPayment) input_SrcSeed() string {
 	fmt.Printf(this.infoStrings[this.languageIndex][AIP_INFO_INPUT_PRIVATE_SEED])
 
 	input := gopass.GetPasswdMasked()
-	if this.verifySAddress(string(input)) == nil {
+	if publicdefine.VerifySAddress(string(input)) == nil {
 		return string(input)
 	}
 	return ""
@@ -165,7 +164,7 @@ func (this *AccountInfoPayment) input_DestAddr() string {
 
 	_, err := fmt.Scanf("%s\n", &input)
 	if err == nil {
-		if this.verifyGAddress(input) == nil {
+		if publicdefine.VerifyGAddress(input) == nil {
 			return input
 		}
 	}
@@ -278,7 +277,7 @@ func (this *AccountInfoPayment) checkSeed(seed, srcAddr string) bool {
 
 func (this *AccountInfoPayment) checkPublicAddrExist(addr string) *publicdefine.StellarAccInfoDef {
 	reqUrl := publicdefine.STELLAR_DEFAULT_NETWORK + publicdefine.STELLAR_NETWORK_ACCOUNTS + "/" + addr
-	resMap, err := publicdefine.HttpGet(reqUrl)
+	resMap, err := this.httpget(reqUrl)
 
 	if err == nil {
 		ret := &publicdefine.StellarAccInfoDef{}
@@ -316,8 +315,8 @@ func (this *AccountInfoPayment) create_account(src *publicdefine.StellarAccInfoD
 		data := "tx=" + url.QueryEscape(signed)
 
 		postUrl := publicdefine.STELLAR_DEFAULT_NETWORK + publicdefine.STELLAR_NETWORK_TRANSACTIONS
-		ret, err := publicdefine.HttpPost_form(postUrl, data)
-		// ret, err := publicdefine.HttpPost_json(postUrl, data)
+		ret, err := this.httppost_form(postUrl, data)
+		// ret, err := this.httppost_json(postUrl, data)
 		if err == nil {
 			cAcc.PutResult(ret)
 			if len(cAcc.ResultHash) > 0 {
@@ -368,8 +367,8 @@ func (this *AccountInfoPayment) pay(src *publicdefine.StellarAccInfoDef,
 		// })
 
 		postUrl := publicdefine.STELLAR_DEFAULT_NETWORK + publicdefine.STELLAR_NETWORK_TRANSACTIONS
-		ret, err := publicdefine.HttpPost_form(postUrl, data)
-		// ret, err := publicdefine.HttpPost_json(postUrl, data)
+		ret, err := this.httppost_form(postUrl, data)
+		// ret, err := this.httppost_json(postUrl, data)
 		if err == nil {
 			payment.PutResult(ret)
 			return payment
@@ -378,14 +377,4 @@ func (this *AccountInfoPayment) pay(src *publicdefine.StellarAccInfoDef,
 		// fmt.Println(err)
 	}
 	return nil
-}
-
-func (this *AccountInfoPayment) verifyGAddress(addr string) error {
-	_, err := strkey.Decode(strkey.VersionByteAccountID, addr)
-	return err
-}
-
-func (this *AccountInfoPayment) verifySAddress(addr string) error {
-	_, err := strkey.Decode(strkey.VersionByteSeed, addr)
-	return err
 }

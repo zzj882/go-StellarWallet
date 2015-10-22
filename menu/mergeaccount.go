@@ -266,7 +266,7 @@ func (this *MergeAccount) merging(srcInfo *publicdefine.StellarAccInfoDef, srcSe
 		// })
 
 		postUrl := publicdefine.STELLAR_DEFAULT_NETWORK + publicdefine.STELLAR_NETWORK_TRANSACTIONS
-		ret, err := publicdefine.HttpPost_form(postUrl, data)
+		ret, err := this.httppost_form(postUrl, data)
 		if err == nil {
 			mergeInfo.PutResult(ret)
 			return mergeInfo

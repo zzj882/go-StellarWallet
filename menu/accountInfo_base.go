@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"github.com/jojopoper/ConsoleColor"
 	"github.com/jojopoper/go-StellarWallet/publicdefine"
-	"github.com/stellar/go-stellar-base/strkey"
 	"strings"
 )
 
@@ -72,7 +71,7 @@ func (this *AccountInfoBase) checkAddrs(addrs []string) []string {
 		tmp := strings.TrimFunc(itm, func(r rune) bool {
 			return r == '\n' || r == '\r' || r == ' '
 		})
-		if this.verifyAddress(tmp) == nil {
+		if publicdefine.VerifyGAddress(tmp) == nil {
 			ret = append(ret, tmp)
 		} else {
 			ConsoleColor.Printf(ConsoleColor.C_RED, this.infoStrings[this.languageIndex][AIB_INFO_ADDR_FORMAT_ERR],
@@ -84,14 +83,9 @@ func (this *AccountInfoBase) checkAddrs(addrs []string) []string {
 	return ret
 }
 
-func (this *AccountInfoBase) verifyAddress(addr string) error {
-	_, err := strkey.Decode(strkey.VersionByteAccountID, addr)
-	return err
-}
-
 func (this *AccountInfoBase) getAccountInfo(addr string) (ret *publicdefine.StellarAccInfoDef, err error) {
 	reqUrl := publicdefine.STELLAR_DEFAULT_NETWORK + publicdefine.STELLAR_NETWORK_ACCOUNTS + "/" + addr
-	resMap, err := publicdefine.HttpGet(reqUrl)
+	resMap, err := this.httpget(reqUrl)
 
 	if err == nil {
 		ret = &publicdefine.StellarAccInfoDef{}
