@@ -24,8 +24,8 @@ func init() {
 		publicdefine.L_English: "Menu",
 	}
 	MainMenuInstace.WelcomeString = []string{
-		publicdefine.L_Chinese: " ##     欢迎使用恒星币钱包，请选择您需要的功能     ##\n",
-		publicdefine.L_English: " ##       Welcome to use the stellar wallet        ##\n" +
+		publicdefine.L_Chinese: " ##  欢迎使用 帐中 恒星币钱包，请选择您需要的功能  ##\n",
+		publicdefine.L_English: " ##   Welcome to use the Ledgercn stellar wallet   ##\n" +
 			" ##      please choose the function you need       ##\n",
 	}
 	MainMenuInstace.MenuSubItem.Exec = MainMenuInstace.Execute
