@@ -23,6 +23,7 @@ const (
 	AIP_INFO_CREDIT_IS_LOW
 	AIP_INFO_DEST_ADDR_NOT_EXIST
 	AIP_INFO_PAYMENT_ABORT
+	AIP_INFO_PAYMENT_ABORT_LESS20
 	AIP_INFO_CREATE_DEST_ADDR
 	AIP_INFO_CREATE_DEST_ADDR_SUCCESS
 	AIP_INFO_SENDING
@@ -61,6 +62,7 @@ func (this *AccountInfoPayment) InitAccInfoPayment(parent MenuSubItemInterface, 
 			AIP_INFO_CREDIT_IS_LOW:             " ** 账户[%s]余额不足，余额为[%s]",
 			AIP_INFO_DEST_ADDR_NOT_EXIST:       " 目标账户[ %s ]不存在，需要创建请输入 yes，否则按回车结束操作: \r\n>",
 			AIP_INFO_PAYMENT_ABORT:             " ** 支付流程终止！",
+			AIP_INFO_PAYMENT_ABORT_LESS20:      " ** 支付流程终止！(新建账户最少需要 20 Lumens)",
 			AIP_INFO_CREATE_DEST_ADDR:          " 正在创建账户[ %s ]....\r\n",
 			AIP_INFO_CREATE_DEST_ADDR_SUCCESS:  " 创建账户成功!",
 			AIP_INFO_SENDING:                   " 正在发送....",
@@ -82,6 +84,7 @@ func (this *AccountInfoPayment) InitAccInfoPayment(parent MenuSubItemInterface, 
 			AIP_INFO_CREDIT_IS_LOW:             " ** Account[%s] credit is low，Balance = [%s]",
 			AIP_INFO_DEST_ADDR_NOT_EXIST:       " Destation address [ %s ] is not Exist，if you need to create this account, input yes + enter, otherwise press the Enter to terminate this payment : \r\n>",
 			AIP_INFO_PAYMENT_ABORT:             " ** Payment process is terminated！",
+			AIP_INFO_PAYMENT_ABORT_LESS20:      " ** Payment process is terminated！(Create new account at least 20 Lumens)",
 			AIP_INFO_CREATE_DEST_ADDR:          " Creating account [ %s ]....\r\n",
 			AIP_INFO_CREATE_DEST_ADDR_SUCCESS:  " Create account success!",
 			AIP_INFO_SENDING:                   " sending ....",
@@ -294,6 +297,7 @@ func (this *AccountInfoPayment) checkPublicAddrExist(addr string) *publicdefine.
 
 func (this *AccountInfoPayment) create_account(src *publicdefine.StellarAccInfoDef,
 	srcSeed, destAddr string, amount float64) bool {
+
 	if len(this.inputConfirm(destAddr)) == 0 {
 		ConsoleColor.Println(ConsoleColor.C_RED,
 			this.infoStrings[this.languageIndex][AIP_INFO_PAYMENT_ABORT])
@@ -302,6 +306,12 @@ func (this *AccountInfoPayment) create_account(src *publicdefine.StellarAccInfoD
 
 	ConsoleColor.Printf(ConsoleColor.C_BLUE,
 		this.infoStrings[this.languageIndex][AIP_INFO_CREATE_DEST_ADDR], destAddr)
+
+	if amount < 20 {
+		ConsoleColor.Println(ConsoleColor.C_RED,
+			this.infoStrings[this.languageIndex][AIP_INFO_PAYMENT_ABORT_LESS20])
+		return false
+	}
 
 	cAcc := publicdefine.StellarAccountCreateInfo{
 		SrcInfo:    src,
