@@ -12,6 +12,12 @@ type SubAccOperQuaryRecordInterface interface {
 	DecodeBody(b map[string]interface{})
 }
 
+type AssetInfoBaseItem struct {
+	Asset_Code   string
+	Asset_Type   string
+	Asset_Issuer string
+}
+
 type SubAccOperRecordItemBase struct {
 	OpType          string
 	SourceAccount   string
@@ -30,7 +36,7 @@ type SubPaymentItem struct {
 	Amount      string
 	FromAccount string
 	ToAccount   string
-	AssetType   string
+	AssetInfo   *AssetInfoBaseItem
 }
 
 type SubChangeTrustItem struct {
@@ -46,6 +52,25 @@ type SubAccountMergeItem struct {
 	SubAccOperRecordItemBase
 	MergeSource string
 	MergeInto   string
+}
+
+type SubSetOptionsItem struct {
+	SubAccOperRecordItemBase
+	HomeDomain    string
+	InflationDest string
+	SignerKey     string
+	SignerWeight  string
+	SetFlags      []string
+	ClearFlags    []string
+}
+
+type SubManageOfferItem struct {
+	SubAccOperRecordItemBase
+	Amount  string
+	OfferID string
+	Price   string
+	Buying  *AssetInfoBaseItem
+	Selling *AssetInfoBaseItem
 }
 
 type StellarAccOperationQuary struct {
@@ -129,6 +154,10 @@ func (this *SubPaymentItem) ToString() (ret string) {
 	ret = this.SubAccOperRecordItemBase.ToString()
 	ret += fmt.Sprintf("          From = [%s]\r\n            To = [%s]\r\n        Amount = [%s]\r\n",
 		this.FromAccount, this.ToAccount, this.Amount)
+	if this.AssetInfo != nil {
+		ret += fmt.Sprintf("          Code = [%s]\r\n        Issuer = [%s]\r\n",
+			this.AssetInfo.Asset_Code, this.AssetInfo.Asset_Issuer)
+	}
 	return
 }
 
@@ -169,12 +198,22 @@ func (this *SubPaymentItem) DecodeBody(b map[string]interface{}) {
 	amount, amountok := b["amount"]
 	from, fromok := b["from"]
 	to, took := b["to"]
-	asset_type, asset_typeok := b["asset_type"]
-	if amountok && fromok && took && asset_typeok {
+	if amountok && fromok && took {
 		this.Amount = amount.(string)
 		this.FromAccount = from.(string)
 		this.ToAccount = to.(string)
-		this.AssetType = asset_type.(string)
+	}
+	asset_issuer, asset_issuerok := b["asset_issuer"]
+	asset_type, asset_typeok := b["asset_type"]
+	asset_code, asset_codeok := b["asset_code"]
+	if asset_issuerok && asset_typeok && asset_codeok {
+		if this.AssetInfo == nil {
+			this.AssetInfo = &AssetInfoBaseItem{}
+		}
+
+		this.AssetInfo.Asset_Code = asset_code.(string)
+		this.AssetInfo.Asset_Issuer = asset_issuer.(string)
+		this.AssetInfo.Asset_Type = asset_type.(string)
 	}
 }
 
@@ -280,6 +319,196 @@ func (this *SubAccountMergeItem) DecodeBody(b map[string]interface{}) {
 	if accountok && intook {
 		this.MergeSource = account.(string)
 		this.MergeInto = into.(string)
+	}
+}
+
+func (this *SubSetOptionsItem) ToString() (ret string) {
+	ret = this.SubAccOperRecordItemBase.ToString()
+	if len(this.SignerKey) > 0 {
+		ret += fmt.Sprintf("     SignerKey = [%s]\r\n", this.SignerKey)
+	}
+	if len(this.SignerWeight) > 0 {
+		ret += fmt.Sprintf("  SignerWeight = [%s]\r\n", this.SignerWeight)
+	}
+	if len(this.HomeDomain) > 0 {
+		ret += fmt.Sprintf("    HomeDomain = [%s]\r\n", this.HomeDomain)
+	}
+	if len(this.InflationDest) > 0 {
+		ret += fmt.Sprintf(" InflationDest = [%s]\r\n", this.InflationDest)
+	}
+	if this.SetFlags != nil && len(this.SetFlags) > 0 {
+		ret += fmt.Sprintf("      SetFlags = %s\r\n", this.SetFlags)
+	}
+	if this.ClearFlags != nil && len(this.ClearFlags) > 0 {
+		ret += fmt.Sprintf("    ClearFlags = %s\r\n", this.ClearFlags)
+	}
+	return
+}
+
+/*
+{
+  "_links": {
+    "effects": {
+      "href": "/operations/3317677552570369/effects{?cursor,limit,order}",
+      "templated": true
+    },
+    "precedes": {
+      "href": "/operations?cursor=3317677552570369\u0026order=asc"
+    },
+    "self": {
+      "href": "/operations/3317677552570369"
+    },
+    "succeeds": {
+      "href": "/operations?cursor=3317677552570369\u0026order=desc"
+    },
+    "transaction": {
+      "href": "/transactions/be63c2d5c010711b9946b0363b85a43d514edca9a691eec229fa2108359d2115"
+    }
+  },
+  "home_domain": "www.ledgercn.com",
+  "id": 3317677552570369,
+  "inflation_dest": "GAZWSWPDQTBHFIPBY4FEDFW2J6E2LE7SZHJWGDZO6Q63W7DBSRICO2KN",
+  "paging_token": "3317677552570369",
+  "set_flags": [
+    1,
+    2
+  ],
+  "set_flags_s": [
+    "auth_required_flag",
+    "auth_revocable_flag"
+  ],
+  "signer_key": "GAZWSWPDQTBHFIPBY4FEDFW2J6E2LE7SZHJWGDZO6Q63W7DBSRICO2KN",
+  "signer_weight": 255,
+  "source_account": "GCR6QXX7IRIJVIM5WA5ASQ6MWDOEJNBW3V6RTC5NJXEMOLVTUVKZ725X",
+  "type": "set_options",
+  "type_i": 5
+},
+*/
+func (this *SubSetOptionsItem) DecodeBody(b map[string]interface{}) {
+	this.SubAccOperRecordItemBase.DecodeBody(b)
+
+	home_domain, ok := b["home_domain"]
+	if ok {
+		this.HomeDomain = home_domain.(string)
+	}
+
+	inflation_dest, ok := b["inflation_dest"]
+	if ok {
+		this.InflationDest = inflation_dest.(string)
+	}
+
+	signer_key, ok := b["signer_key"]
+	if ok {
+		this.SignerKey = signer_key.(string)
+	}
+
+	signer_weight, ok := b["signer_weight"]
+	if ok {
+		this.SignerWeight = fmt.Sprintf("%d", (int64)(signer_weight.(float64)))
+	}
+
+	set_flags_s, ok := b["set_flags_s"]
+	if ok {
+		for _, v := range set_flags_s.([]interface{}) {
+			if this.SetFlags == nil {
+				this.SetFlags = make([]string, 0)
+			}
+			this.SetFlags = append(this.SetFlags, v.(string))
+		}
+	}
+
+	clear_flags_s, ok := b["clear_flags_s"]
+	if ok {
+		for _, v := range clear_flags_s.([]interface{}) {
+			if this.ClearFlags == nil {
+				this.ClearFlags = make([]string, 0)
+			}
+			this.ClearFlags = append(this.ClearFlags, v.(string))
+		}
+	}
+}
+
+func (this *SubManageOfferItem) ToString() (ret string) {
+	ret = this.SubAccOperRecordItemBase.ToString()
+	ret += fmt.Sprintf("        Amount = [%s]\r\n       OfferID = [%s]\r\n         Price = [%s]\r\n",
+		this.Amount, this.OfferID, this.Price)
+	if this.Buying != nil {
+		ret += fmt.Sprintf("        Buying = [\r\n\t\t  Code : %s\r\n\t\t  Type : %s\r\n\t\t  Issuer : %s\r\n\t\t ]\r\n ",
+			this.Buying.Asset_Code, this.Buying.Asset_Type, this.Buying.Asset_Issuer)
+	}
+	if this.Selling != nil {
+		ret += fmt.Sprintf("      Selling = [\r\n\t\t  Code : %s\r\n\t\t  Type : %s\r\n\t\t  Issuer : %s\r\n\t\t ]\r\n ",
+			this.Selling.Asset_Code, this.Selling.Asset_Type, this.Selling.Asset_Issuer)
+	}
+	return
+}
+
+func (this *SubManageOfferItem) DecodeBody(b map[string]interface{}) {
+	this.SubAccOperRecordItemBase.DecodeBody(b)
+	amount, ok := b["amount"]
+	if ok {
+		this.Amount = amount.(string)
+	}
+
+	offer_id, ok := b["offer_id"]
+	if ok {
+		this.OfferID = fmt.Sprintf("%d", (int64)(offer_id.(float64)))
+	}
+
+	price, ok := b["price"]
+	if ok {
+		this.Price = price.(string)
+	}
+
+	buying_asset_type, ok_buy_type := b["buying_asset_type"]
+	buying_asset_issuer, ok_buy_iusser := b["buying_asset_issuer"]
+	buying_asset_code, ok_buy_code := b["buying_asset_code"]
+	selling_asset_type, ok_sell_type := b["selling_asset_type"]
+	selling_asset_issuer, ok_sell_iusser := b["selling_asset_issuer"]
+	selling_asset_code, ok_sell_code := b["selling_asset_code"]
+
+	if ok_buy_type {
+		if this.Buying == nil {
+			this.Buying = &AssetInfoBaseItem{}
+		}
+		this.Buying.Asset_Type = buying_asset_type.(string)
+		if this.Buying.Asset_Type != "native" {
+			if ok_buy_code {
+				this.Buying.Asset_Code = buying_asset_code.(string)
+			}
+
+			if ok_buy_iusser {
+				this.Buying.Asset_Issuer = buying_asset_issuer.(string)
+			}
+		} else {
+			this.Buying.Asset_Code = "XLM"
+
+			if ok_sell_iusser {
+				this.Buying.Asset_Issuer = selling_asset_issuer.(string)
+			}
+		}
+	}
+
+	if ok_sell_type {
+		if this.Selling == nil {
+			this.Selling = &AssetInfoBaseItem{}
+		}
+		this.Selling.Asset_Type = selling_asset_type.(string)
+		if this.Selling.Asset_Type != "native" {
+			if ok_sell_code {
+				this.Selling.Asset_Code = selling_asset_code.(string)
+			}
+
+			if ok_sell_iusser {
+				this.Selling.Asset_Issuer = selling_asset_issuer.(string)
+			}
+		} else {
+			this.Selling.Asset_Code = "XLM"
+
+			if ok_buy_iusser {
+				this.Selling.Asset_Issuer = buying_asset_issuer.(string)
+			}
+		}
 	}
 }
 
@@ -468,6 +697,16 @@ func (this *StellarAccOperationQuary) decodeSubrecord(itm map[string]interface{}
 			this.Records = append(this.Records, subitm)
 		case "account_merge":
 			subitm := &SubAccountMergeItem{}
+			subitm.OpType = stype.(string)
+			subitm.DecodeBody(itm)
+			this.Records = append(this.Records, subitm)
+		case "set_options":
+			subitm := &SubSetOptionsItem{}
+			subitm.OpType = stype.(string)
+			subitm.DecodeBody(itm)
+			this.Records = append(this.Records, subitm)
+		case "manage_offer":
+			subitm := &SubManageOfferItem{}
 			subitm.OpType = stype.(string)
 			subitm.DecodeBody(itm)
 			this.Records = append(this.Records, subitm)
