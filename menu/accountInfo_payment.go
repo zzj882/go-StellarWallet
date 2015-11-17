@@ -6,7 +6,7 @@ import (
 	"github.com/howeyc/gopass"
 	"github.com/jojopoper/ConsoleColor"
 	"github.com/jojopoper/go-StellarWallet/publicdefine"
-	"github.com/stellar/go-stellar-base"
+	"github.com/stellar/go-stellar-base/keypair"
 	"net/url"
 	"strconv"
 	"strings"
@@ -263,9 +263,9 @@ func (this *AccountInfoPayment) checkSourceAddr(addr string, amount float64) *pu
 }
 
 func (this *AccountInfoPayment) checkSeed(seed, srcAddr string) bool {
-	pubadd, _, err := stellarbase.GenerateKeyFromSeed(seed)
+	pk, err := keypair.Parse(seed)
 	if err == nil {
-		if pubadd.Address() == srcAddr {
+		if pk.Address() == srcAddr {
 			return true
 		}
 		ConsoleColor.Printf(ConsoleColor.C_RED,

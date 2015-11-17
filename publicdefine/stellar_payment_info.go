@@ -2,7 +2,7 @@ package publicdefine
 
 import (
 	"fmt"
-	"github.com/stellar/go-stellar-base"
+	// "github.com/stellar/go-stellar-base"
 	"github.com/stellar/go-stellar-base/build"
 	"github.com/stellar/go-stellar-base/xdr"
 )
@@ -21,7 +21,7 @@ type StellarPaymentInfo struct {
 
 func (this *StellarPaymentInfo) GetSigned(seed string) string {
 
-	_, spriv, _ := stellarbase.GenerateKeyFromSeed(seed)
+	// _, spriv, _ := stellarbase.GenerateKeyFromSeed(seed)
 
 	tx := build.TransactionBuilder{}
 	pb := build.PaymentBuilder{}
@@ -40,7 +40,8 @@ func (this *StellarPaymentInfo) GetSigned(seed string) string {
 	tx.Mutate(pb)
 	tx.Mutate(build.SourceAccount{this.SrcInfo.ID})
 	tx.TX.Fee = BASEMENT_FEE
-	result := tx.Sign(&spriv)
+	// result := tx.Sign(&spriv)
+	result := tx.Sign(seed)
 
 	var err error
 

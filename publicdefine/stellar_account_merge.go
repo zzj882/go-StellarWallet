@@ -16,8 +16,6 @@ type StellarAccountMerge struct {
 
 func (this *StellarAccountMerge) GetSigned(seed string) string {
 
-	_, spriv, _ := stellarbase.GenerateKeyFromSeed(seed)
-
 	tx := build.TransactionBuilder{}
 	tx.TX = &xdr.Transaction{}
 	opt := xdr.Operation{}
@@ -37,7 +35,7 @@ func (this *StellarAccountMerge) GetSigned(seed string) string {
 	}
 	tx.Mutate(build.SourceAccount{this.SrcInfo.ID})
 	tx.TX.Fee = BASEMENT_FEE
-	result := tx.Sign(&spriv)
+	result := tx.Sign(seed)
 
 	var err error
 

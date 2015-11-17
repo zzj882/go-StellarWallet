@@ -5,8 +5,7 @@ import (
 	"github.com/howeyc/gopass"
 	"github.com/jojopoper/ConsoleColor"
 	"github.com/jojopoper/go-StellarWallet/publicdefine"
-	"github.com/stellar/go-stellar-base"
-	"github.com/stellar/go-stellar-base/strkey"
+	"github.com/stellar/go-stellar-base/keypair"
 	"net/url"
 	"strings"
 )
@@ -133,7 +132,7 @@ func (this *MergeAccount) input_SrcAddr() string {
 
 	_, err := fmt.Scanf("%s\n", &input)
 	if err == nil {
-		if this.verifyGAddress(input) == nil {
+		if publicdefine.VerifyGAddress(input) == nil {
 			return input
 		}
 	}
@@ -144,7 +143,7 @@ func (this *MergeAccount) input_SrcSeed() string {
 	fmt.Printf(this.infoStrings[this.languageIndex][MA_INFO_INPUT_SOURCE_SEED])
 
 	input := gopass.GetPasswdMasked()
-	if this.verifySAddress(string(input)) == nil {
+	if publicdefine.VerifySAddress(string(input)) == nil {
 		return string(input)
 	}
 	return ""
@@ -157,7 +156,7 @@ func (this *MergeAccount) input_DestAddr() string {
 
 	_, err := fmt.Scanf("%s\n", &input)
 	if err == nil {
-		if this.verifyGAddress(input) == nil {
+		if publicdefine.VerifyGAddress(input) == nil {
 			return input
 		}
 	}
@@ -236,9 +235,9 @@ func (this *MergeAccount) checkSourceAddr(addr string) *publicdefine.StellarAccI
 }
 
 func (this *MergeAccount) checkSeed(seed, srcAddr string) bool {
-	pubadd, _, err := stellarbase.GenerateKeyFromSeed(seed)
+	pk, err := keypair.Parse(seed)
 	if err == nil {
-		if pubadd.Address() == srcAddr {
+		if pk.Address() == srcAddr {
 			return true
 		}
 		ConsoleColor.Printf(ConsoleColor.C_RED,
@@ -275,14 +274,4 @@ func (this *MergeAccount) merging(srcInfo *publicdefine.StellarAccInfoDef, srcSe
 		// fmt.Println(err)
 	}
 	return nil
-}
-
-func (this *MergeAccount) verifyGAddress(addr string) error {
-	_, err := strkey.Decode(strkey.VersionByteAccountID, addr)
-	return err
-}
-
-func (this *MergeAccount) verifySAddress(addr string) error {
-	_, err := strkey.Decode(strkey.VersionByteSeed, addr)
-	return err
 }

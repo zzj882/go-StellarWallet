@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"github.com/jojopoper/ConsoleColor"
 	"github.com/jojopoper/go-StellarWallet/publicdefine"
-	"github.com/stellar/go-stellar-base"
+	"github.com/stellar/go-stellar-base/keypair"
 	"os"
 	"time"
 )
@@ -51,42 +51,33 @@ func (this *CreateAccount) InitCreator(parent MenuSubItemInterface, key string) 
 
 func (this *CreateAccount) execute(isSync bool) {
 	var input string
-	b, err := publicdefine.SafeRandomBytes(32)
+
+	kp, err := keypair.Random()
+
 	if err == nil {
-		seed, err := stellarbase.NewRawSeed(b)
-		if err == nil {
-			pubKey, priKey, err := stellarbase.GenerateKeyFromRawSeed(seed)
+		keyp := kp.(*keypair.Full)
+		fmt.Printf("\r\n"+this.infoStrings[this.languageIndex][CA_INFO_SECRET_SEED]+" %s\r\n", keyp.Seed())
+		fmt.Printf(this.infoStrings[this.languageIndex][CA_INFO_PUBLIC_ADDR]+" %s\r\n", keyp.Address())
+		fmt.Printf("\r\n" + this.infoStrings[this.languageIndex][CA_INFO_MEMO_TEXT])
+		fmt.Scanf("%s\n", &input)
 
+		if input == "s" {
+			err = this.savefile("account_info.txt", keyp.Seed(), keyp.Address())
 			if err == nil {
-				fmt.Printf("\r\n"+this.infoStrings[this.languageIndex][CA_INFO_SECRET_SEED]+" %s\r\n", priKey.Seed())
-				fmt.Printf(this.infoStrings[this.languageIndex][CA_INFO_PUBLIC_ADDR]+" %s\r\n", pubKey.Address())
-				fmt.Printf("\r\n" + this.infoStrings[this.languageIndex][CA_INFO_MEMO_TEXT])
-				fmt.Scanf("%s\n", &input)
-
-				if input == "s" {
-					err = this.savefile("account_info.txt", priKey.Seed(), pubKey.Address())
-					if err == nil {
-						ConsoleColor.Printf(ConsoleColor.C_YELLOW,
-							"\r\n"+this.infoStrings[this.languageIndex][CA_INFO_MEMO_SAVEFILE]+"\r\n\r\n", "account_info.txt")
-						// fmt.Printf("\r\n"+this.infoStrings[this.languageIndex][CA_INFO_MEMO_SAVEFILE]+"\r\n\r\n", "account_info.txt")
-					} else {
-						ConsoleColor.Println(ConsoleColor.C_RED,
-							"\r\n", this.infoStrings[this.languageIndex][CA_INFO_MEMO_SAVEFILE_ERR], "\r\n", err, "\r\n\r\n")
-						// fmt.Println("\r\n", this.infoStrings[this.languageIndex][CA_INFO_MEMO_SAVEFILE_ERR], "\r\n", err, "\r\n\r\n")
-					}
-				}
+				ConsoleColor.Printf(ConsoleColor.C_YELLOW,
+					"\r\n"+this.infoStrings[this.languageIndex][CA_INFO_MEMO_SAVEFILE]+"\r\n\r\n", "account_info.txt")
+				// fmt.Printf("\r\n"+this.infoStrings[this.languageIndex][CA_INFO_MEMO_SAVEFILE]+"\r\n\r\n", "account_info.txt")
 			} else {
-				fmt.Println(err.Error())
-				fmt.Scanf("%s\n", &input)
+				ConsoleColor.Println(ConsoleColor.C_RED,
+					"\r\n", this.infoStrings[this.languageIndex][CA_INFO_MEMO_SAVEFILE_ERR], "\r\n", err, "\r\n\r\n")
+				// fmt.Println("\r\n", this.infoStrings[this.languageIndex][CA_INFO_MEMO_SAVEFILE_ERR], "\r\n", err, "\r\n\r\n")
 			}
-		} else {
-			fmt.Println(err.Error())
-			fmt.Scanf("%s\n", &input)
 		}
 	} else {
 		fmt.Println(err.Error())
 		fmt.Scanf("%s\n", &input)
 	}
+
 	if !isSync {
 		this.ASyncChan <- 0
 	}
