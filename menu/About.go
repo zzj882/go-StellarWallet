@@ -26,18 +26,18 @@ func (this *SoftwareAbout) InitAbout(parent MenuSubItemInterface, key string) {
 
 	this.infoStrings = []map[int]string{
 		publicdefine.L_Chinese: map[int]string{
-			SA_INFO_MEMO: "   软件版本 : 1.0.0.20151018\r\n" +
+			SA_INFO_MEMO: "   软件版本 : 1.0.0.20151118\r\n" +
 				"   开发团队 : http://www.ledgercn.com\r\n" +
 				"   钱包源码 : https://www.github.com/jojopoper/go-StellarWallet\r\n" +
 				" 我们的QQ群 : 204444685\r\n" +
-				" 支持和打赏 : gBgfNY9Mzpx1Fbz9btGuY4RLxSmkE3PeYC\r\n",
+				" 支持和打赏 : GDKVR4HKZWPGWAWFWSHVT4A3TL5333SNXP7W5GRBB25XZQ5FCP7MJVNS\r\n",
 		},
 		publicdefine.L_English: map[int]string{
-			SA_INFO_MEMO: "     Wallet Version : 1.0.0.20151018\r\n" +
+			SA_INFO_MEMO: "     Wallet Version : 1.0.0.20151118\r\n" +
 				"           Our team : http://www.ledgercn.com\r\n" +
 				"        Source code : https://www.github.com/jojopoper/go-StellarWallet\r\n" +
 				"       Our QQ group : 204444685\r\n" +
-				" Support and reward : gBgfNY9Mzpx1Fbz9btGuY4RLxSmkE3PeYC\r\n",
+				" Support and reward : GDKVR4HKZWPGWAWFWSHVT4A3TL5333SNXP7W5GRBB25XZQ5FCP7MJVNS\r\n",
 		},
 	}
 
