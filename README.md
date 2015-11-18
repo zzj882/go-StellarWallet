@@ -25,5 +25,5 @@
 
 
 ```shell
-go get github.com/jojopopoer/go-StellarWallet
+go get github.com/Ledgercn/go-StellarWallet
 ```
