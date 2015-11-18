@@ -2,7 +2,7 @@ package menu
 
 import (
 	// "fmt"
-	"github.com/jojopoper/go-StellarWallet/publicdefine"
+	"github.com/Ledgercn/go-StellarWallet/publicdefine"
 	"os"
 )
 

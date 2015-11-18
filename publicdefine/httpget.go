@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	// "fmt"
 	"errors"
-	"github.com/jojopoper/ConsoleColor"
+	"github.com/Ledgercn/ConsoleColor"
 	"golang.org/x/net/proxy"
 	"io/ioutil"
 	"net"

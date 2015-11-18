@@ -2,9 +2,9 @@ package menu
 
 import (
 	"fmt"
+	"github.com/Ledgercn/ConsoleColor"
+	"github.com/Ledgercn/go-StellarWallet/publicdefine"
 	"github.com/howeyc/gopass"
-	"github.com/jojopoper/ConsoleColor"
-	"github.com/jojopoper/go-StellarWallet/publicdefine"
 	"github.com/stellar/go-stellar-base/keypair"
 	"net/url"
 	"strings"

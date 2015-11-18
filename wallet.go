@@ -3,9 +3,9 @@ package main
 import (
 	"errors"
 	"fmt"
-	"github.com/jojopoper/ConsoleColor"
-	"github.com/jojopoper/go-StellarWallet/menu"
-	"github.com/jojopoper/go-StellarWallet/publicdefine"
+	"github.com/Ledgercn/ConsoleColor"
+	"github.com/Ledgercn/go-StellarWallet/menu"
+	"github.com/Ledgercn/go-StellarWallet/publicdefine"
 	"os"
 	"strconv"
 	"strings"

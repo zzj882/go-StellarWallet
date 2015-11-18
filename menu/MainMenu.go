@@ -2,9 +2,7 @@ package menu
 
 import (
 	"fmt"
-	// "github.com/jojopoper/go-StellarWallet/createAccount"
-	// "github.com/jojopoper/ConsoleColor"
-	"github.com/jojopoper/go-StellarWallet/publicdefine"
+	"github.com/Ledgercn/go-StellarWallet/publicdefine"
 )
 
 type MenuInfo struct {
